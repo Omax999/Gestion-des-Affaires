@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+	<!--<connectionStrings>
+		<add name="Gestion_des_Frais.Properties.Settings.DB_FraisConnectionString"
+            connectionString="Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\DB_Sothcom_Affaires.mdf;Integrated Security=True"
+            providerName="System.Data.SqlClient" />
+	</connectionStrings>-->
+    <configSections>
+    </configSections>
+    <connectionStrings>
+        <add name="GestionAffaire.Properties.Settings.DB_AffaireConnectionString"
+            connectionString="Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\DB_Affaire.mdf;Integrated Security=True"
+            providerName="System.Data.SqlClient" />
+    </connectionStrings>
+    <startup> 
+        <supportedRuntime version="v4.0" sku=".NETFramework,Version=v4.7.2" />
+    </startup>
+</configuration>
