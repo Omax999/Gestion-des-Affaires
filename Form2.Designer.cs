@@ -40,7 +40,7 @@ namespace GestionAffaire
             // 
             // menuStrip1
             // 
-            this.menuStrip1.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.menuStrip1.BackColor = System.Drawing.SystemColors.ActiveBorder;
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.reteurToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
