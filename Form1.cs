@@ -353,7 +353,7 @@ namespace GestionAffaire
             cmbTypeFrais.Items.Add("Frais de Deplacement Ingenieur(Controle de Gestion)");
             cmbTypeFrais.Items.Add("Frais de Kilometriques(Controle de Gestion)");
             cmbTypeFrais.Items.Add("Divers");
-            cmbTypeFrais.Items.Add("...Définir");
+            cmbTypeFrais.Items.Add("Redéfinir...");
 
 
         }
@@ -520,7 +520,7 @@ namespace GestionAffaire
         {
             con.Open();
             cmd.CommandText = "declare @num int = 1 " +
-                              "while (exists(select numero from Frais where numero = @num)) " +
+                              "while (exists(select numero from Frais where numero = @num))" +
                               "begin " +
                                 "set @num = @num + 1; " +
                               "end " +
@@ -851,7 +851,7 @@ namespace GestionAffaire
             }
 
             con.Open();
-            cmd.CommandText = "select Numero,client as 'Client',responsable as 'Responsable' from Affaires where Numero='" + cmbNumeroAff.Text + "'";
+            cmd.CommandText = "select Numero,client as 'Client',responsable as 'Responsable',noteFrais as 'Note des Frais' from Affaires where Numero='" + cmbNumeroAff.Text + "'";
             da.SelectCommand = cmd;
             da.Fill(dt);
 
@@ -882,7 +882,7 @@ namespace GestionAffaire
                     if (cmbClientAff.Text != "" && cmbResponsableAff.Text != "")
                     {
                         con.Open();
-                        cmd.CommandText = "insert into Affaires values('" + cmbNumeroAff.Text + "','" + cmbClientAff.Text + "','" + cmbResponsableAff.Text + "')";
+                        cmd.CommandText = "insert into Affaires(Numero,Client,Responsable) values('" + cmbNumeroAff.Text + "','" + cmbClientAff.Text + "','" + cmbResponsableAff.Text + "')";
                         cmd.ExecuteNonQuery();
                         con.Close();
 
@@ -999,7 +999,7 @@ namespace GestionAffaire
         {
             errorProvider1.Dispose();
 
-            if (cmbTypeFrais.Text == "...Définir")
+            if (cmbTypeFrais.Text == "Redéfinir...")
             {
                 cmbTypeFrais.DropDownStyle = ComboBoxStyle.DropDown;
                 cmbTypeFrais.Text = "";
@@ -1043,8 +1043,13 @@ namespace GestionAffaire
                 da.Fill(dt);
                 con.Close();
 
-                listFraisNote.DataSource = dt;
-                listFraisNote.Columns[3].DefaultCellStyle.Format = "dd/mm/yy";
+                for (int i = 0; i < dt.Rows.Count-1; i++)
+                {
+                    txtDateFrais.Text = dt.Rows[i][4].ToString();
+                    listFraisNote.Rows[i].Cells[3].Value = txtDateFrais.Text;
+                }
+                txtDateFrais.Text = "";
+                //listFraisNote.DataSource = dt;
 
                 //MessageBox.Show();
                 Boolean isThere = false;
@@ -1097,7 +1102,7 @@ namespace GestionAffaire
                         {
 
                             cmd.CommandText = "insert into Frais(numero,Type,PiecesComptables,date,frais,noteFrais) values('" +
-                                                                                                    int.Parse(listFraisNote.Rows[i].Cells[1].Value.ToString()) + "','" +
+                                                                                                    int.Parse(listFraisNote.Rows[i].Cells[0].Value.ToString()) + "','" +
                                                                                                     listFraisNote.Rows[i].Cells[1].Value.ToString() + "','" +
                                                                                                     listFraisNote.Rows[i].Cells[2].Value.ToString() + "','" +
                                                                                                     DateTime.Parse(listFraisNote.Rows[i].Cells[3].Value.ToString()) + "','" +
@@ -1113,6 +1118,7 @@ namespace GestionAffaire
                         remplirPCNote();
                         NumeroNote();
                         RemplirNumeroAffaire();
+                        remplirListAffaire();
                         txtDateFrais.Text = "";
                         txtFraisFrais.Text = "0";
 
@@ -1157,6 +1163,7 @@ namespace GestionAffaire
                         remplirPCNote();
                         NumeroNote();
                         RemplirNumeroAffaire();
+                        remplirListAffaire();
                         txtDateFrais.Text = "";
                         txtFraisFrais.Text = "0";
 
@@ -1323,25 +1330,29 @@ namespace GestionAffaire
         }
         private void button4_Click(object sender, EventArgs e)
         {
-            if (rbValiderNote.Checked == true)
-            {
-                listFraisNote.Rows.Clear();
-                remplirTypeNote();
-                remplirPCNote();
-                RemplirNumeroAffaire();
-                RemplirNomRespo();
-                remplirNumeroNote();
+            listFraisNote.Rows.Clear();
+            remplirTypeNote();
+            remplirPCNote();
+            RemplirNumeroAffaire();
+            RemplirNomRespo();
+            remplirNumeroNote();
 
-                cmbNumeroNote.Text = "";
-                txtDateFrais.Text = "";
-                txtFraisFrais.Text = "0";
-            }
+            cmbNumeroNote.Text = "";
+            txtDateFrais.Text = "";
+            txtFraisFrais.Text = "0";
+
+
+
+            remplirNumeroNote();
+            txtNumAff.Text = txtTotalFraisNote.Text = "";
         }
         // ici report de note de Frais 
         private void btnImrimerPdfNote_Click(object sender, EventArgs e)
         {
 
         }
+
+
 
 
         // mission
@@ -1352,26 +1363,33 @@ namespace GestionAffaire
             
             if (cmbRespoMission.Text != "" && txtDateDebutMission.Text != "" && txtDateFinMission.Text != "" && txtLieuDepartMission.Text != "" && txtLieuArriveMission.Text != "" && cmbNumAffMission.Text != "")
             {
-                con.Open();
-                cmd.CommandText = "insert into Mission(dateDebut,dateFin,lieuDepart,lieuArriver,affaire,respo) values('" +
-                                                                        DateTime.Parse(txtDateDebutMission.Text) + "','" +
-                                                                        DateTime.Parse(txtDateFinMission.Text) + "','" +
-                                                                        txtLieuDepartMission.Text + "','" +
-                                                                        txtLieuArriveMission.Text + "','" +
-                                                                        cmbNumAffMission.Text + "','" +
-                                                                        cmbRespoMission.Text + "')";
-                cmd.ExecuteNonQuery();
-                con.Close();
+                if (Convert.ToDateTime(txtDateFinMission.Text) >= Convert.ToDateTime(txtDateDebutMission.Text))
+                {
+                    con.Open();
+                    cmd.CommandText = "insert into Mission(dateDebut,dateFin,lieuDepart,lieuArriver,affaire,respo) values('" +
+                                                                            DateTime.Parse(txtDateDebutMission.Text) + "','" +
+                                                                            DateTime.Parse(txtDateFinMission.Text) + "','" +
+                                                                            txtLieuDepartMission.Text + "','" +
+                                                                            txtLieuArriveMission.Text + "','" +
+                                                                            cmbNumAffMission.Text + "','" +
+                                                                            cmbRespoMission.Text + "')";
+                    cmd.ExecuteNonQuery();
+                    con.Close();
 
-                MessageBox.Show("Ajouter Avec Succès");
+                    MessageBox.Show("Ajouter Avec Succès");
 
-                remplirNumeroMission();
-                remplirListMission();
-                remplirNumeroMission();
-                RemplirNumeroAffaire();
-                RemplirNomRespo();
+                    remplirNumeroMission();
+                    remplirListMission();
+                    remplirNumeroMission();
+                    RemplirNumeroAffaire();
+                    RemplirNomRespo();
 
-                cmbNumeroMission.Text = txtDateDebutMission.Text = txtDateFinMission.Text = txtLieuDepartMission.Text = txtLieuArriveMission.Text = "";
+                    cmbNumeroMission.Text = txtDateDebutMission.Text = txtDateFinMission.Text = txtLieuDepartMission.Text = txtLieuArriveMission.Text = "";
+                }
+                else
+                {
+                    errorProvider1.SetError(btnValiderMission, "Date Fin de Mission doit être Supérieur ou egale Date Debut");
+                }
             }
             else
             {
@@ -1400,28 +1418,35 @@ namespace GestionAffaire
                 {
                     if (cmbRespoMission.Text != "" && txtDateDebutMission.Text != "" && txtDateFinMission.Text != "" && txtLieuDepartMission.Text != "" && txtLieuArriveMission.Text != "" && cmbNumAffMission.Text != "")
                     {
-                        con.Open();
-                        cmd.CommandText = "update Mission set dateDebut='" + DateTime.Parse(txtDateDebutMission.Text) +
-                                                            "',dateFin ='" + DateTime.Parse(txtDateFinMission.Text) +
-                                                            "',lieuDepart='" + txtLieuDepartMission.Text +
-                                                            "',lieuArriver='" + txtLieuArriveMission.Text +
-                                                            "',affaire='" + cmbNumAffMission.Text +
-                                                            "',respo='" + cmbRespoMission.Text +
-                                                            "' where numero='" + cmbNumeroMission.Text + "'";
-                        cmd.ExecuteNonQuery();
-                        cmd.Parameters.Clear();
-                        cmd.CommandText = "update Mission set NbrJour = DATEDIFF(DAY, dateDebut, dateFin)  + 1 where numero='"+ cmbNumeroMission.Text +"'";
-                        cmd.ExecuteNonQuery();
-                        con.Close();
+                        if (Convert.ToDateTime(txtDateFinMission.Text) >= Convert.ToDateTime(txtDateDebutMission.Text))
+                        {
+                            con.Open();
+                            cmd.CommandText = "update Mission set dateDebut='" + DateTime.Parse(txtDateDebutMission.Text) +
+                                                                "',dateFin ='" + DateTime.Parse(txtDateFinMission.Text) +
+                                                                "',lieuDepart='" + txtLieuDepartMission.Text +
+                                                                "',lieuArriver='" + txtLieuArriveMission.Text +
+                                                                "',affaire='" + cmbNumAffMission.Text +
+                                                                "',respo='" + cmbRespoMission.Text +
+                                                                "' where numero='" + cmbNumeroMission.Text + "'";
+                            cmd.ExecuteNonQuery();
+                            cmd.Parameters.Clear();
+                            cmd.CommandText = "update Mission set NbrJour = DATEDIFF(DAY, dateDebut, dateFin)  + 1 where numero='" + cmbNumeroMission.Text + "'";
+                            cmd.ExecuteNonQuery();
+                            con.Close();
 
-                        MessageBox.Show("Modification Avec Succès");
+                            MessageBox.Show("Modification Avec Succès");
 
-                        remplirNumeroMission();
-                        remplirListMission();
-                        RemplirNumeroAffaire();
-                        RemplirNomRespo();
+                            remplirNumeroMission();
+                            remplirListMission();
+                            RemplirNumeroAffaire();
+                            RemplirNomRespo();
 
-                        cmbNumeroMission.Text = txtDateDebutMission.Text = txtDateFinMission.Text = txtLieuDepartMission.Text = txtLieuArriveMission.Text = "";
+                            cmbNumeroMission.Text = txtDateDebutMission.Text = txtDateFinMission.Text = txtLieuDepartMission.Text = txtLieuArriveMission.Text = "";
+                        }
+                        else
+                        {
+                            errorProvider1.SetError(btnModifierMission, "Date Fin de Mission doit être Supérieur ou egale Date Debut");
+                        }
                     }
                     else
                     {
@@ -1568,15 +1593,22 @@ namespace GestionAffaire
             {
                 if (cmbTypeFrais.Text != "" && cmbPCFrais.Text != "" && txtFraisFrais.Text != "" && txtDateFrais.Text != "")
                 {
-                    listFraisNote.Rows.Add(NumeroFrais() ,cmbTypeFrais.Text,cmbPCFrais.Text, txtDateFrais.Text, txtFraisFrais.Text);
+                    if (double.Parse(txtFraisFrais.Text) >= 0)
+                    {
+                        listFraisNote.Rows.Add(listFraisNote.Rows.Count.ToString() ,cmbTypeFrais.Text,cmbPCFrais.Text, txtDateFrais.Text, txtFraisFrais.Text);
                     
                     
-                    remplirTypeNote();
-                    remplirPCNote();
-                    txtDateFrais.Text = "";
-                    txtFraisFrais.Text = "";
-                    txtFraisFrais.Enabled = true;
-                    cmbTypeFrais.DropDownStyle = ComboBoxStyle.DropDownList;
+                        remplirTypeNote();
+                        remplirPCNote();
+                        txtDateFrais.Text = "";
+                        txtFraisFrais.Text = "";
+                        txtFraisFrais.Enabled = true;
+                        cmbTypeFrais.DropDownStyle = ComboBoxStyle.DropDownList;
+                    }
+                    else
+                    {
+                        errorProvider1.SetError(txtFraisFrais,"Saisir Frais Valide");
+                    }
                 }
                 else
                 {
@@ -1594,16 +1626,22 @@ namespace GestionAffaire
             {
                 if (cmbTypeFrais.Text != "" && cmbPCFrais.Text != "" && txtFraisFrais.Text != "" && txtDateFrais.Text != "")
                 {
-                    listFraisNote.Rows.Add(NumeroFrais(), cmbTypeFrais.Text, cmbPCFrais.Text, txtDateFrais.Text, txtFraisFrais.Text);
+                    if (double.Parse(txtFraisFrais.Text) >= 0)
+                    {
+                        listFraisNote.Rows.Add(NumeroFrais(), cmbTypeFrais.Text, cmbPCFrais.Text, txtDateFrais.Text, txtFraisFrais.Text);
 
-                    
-                    remplirTypeNote();
-                    remplirPCNote();
-                    txtDateFrais.Text = "";
-                    txtFraisFrais.Text = "";
-                    txtFraisFrais.Enabled = true;
-                    cmbTypeFrais.DropDownStyle = ComboBoxStyle.DropDownList;
 
+                        remplirTypeNote();
+                        remplirPCNote();
+                        txtDateFrais.Text = "";
+                        txtFraisFrais.Text = "";
+                        txtFraisFrais.Enabled = true;
+                        cmbTypeFrais.DropDownStyle = ComboBoxStyle.DropDownList;
+                    }
+                    else
+                    {
+                        errorProvider1.SetError(txtFraisFrais, "Saisir Frais Valide");
+                    }
                 }
                 else
                 {
@@ -1630,7 +1668,7 @@ namespace GestionAffaire
                 {
                     int num = int.Parse(listFraisNote.Rows[e.RowIndex].Cells[0].Value.ToString());
                     con.Open();
-                    cmd.CommandText = "delete Frais where Numero='" + num + "'";
+                    cmd.CommandText = "delete Frais where Numero='" + num + "' and noteFrais='" + int.Parse(cmbNumeroNote.Text) +"'";
                     cmd.ExecuteNonQuery();
                     con.Close();
 
@@ -1701,74 +1739,29 @@ namespace GestionAffaire
 
 
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-        }
-        // beneficaire (client)
-        private void cmbCinBeneRech_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            
-        }
-        private void btnLoadListBene_Click(object sender, EventArgs e)
-        {
-        }
-        private void btnValiderBene_Click(object sender, EventArgs e)
-        {
-            
-        }
-        private void btnModifierBene_Click(object sender, EventArgs e)
-        {
-            
-        }
-        private void btnSupprimer_Click(object sender, EventArgs e)
-        {
-            
-        }
-        // note de frais
-        private void cmbNumNoteRech_SelectedIndexChanged(object sender, EventArgs e)
-        {
-        }
-        private void btnModifierNote_Click(object sender, EventArgs e)
-        {
-            
-        }
-        private void btnSupprimerNote_Click(object sender, EventArgs e)
-        {
-            
-        }
+
+
         
-        private void cmbPCNoteRech_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            
-        }
+        // beneficaire (client)
+        
+        // note de frais
+        
         private void button2_Click_1(object sender, EventArgs e)
         {
             remplirListFraisNote();
             remplirNumeroNote();
             remplirTypeNote();
             remplirPCNote();
-
         }
 
        
-        private void btnValiderMission_Click(object sender, EventArgs e)
-        {
-            
-        }
         
         
 
         
 
 
-        private void txtMontantAffAjouter_Validating(object sender, CancelEventArgs e)
-        {
-            
-        }
-
-        private void imprimerToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-        }
+        
 
         private void btnPdfAff_Click(object sender, EventArgs e)
         {
@@ -1815,19 +1808,11 @@ namespace GestionAffaire
             else
                 errorProvider1.SetError(cmbNumeroAff, "chisir une Affaire");
         }
-
-        
-
         private void button5_Click(object sender, EventArgs e)
         {
             RemplirIdClient();
             RemplirNumeroAffaire();
         }
-
-        private void button6_Click(object sender, EventArgs e)
-        {
-        }
-
         private void button7_Click(object sender, EventArgs e)
         {
             remplirNumeroNote();
@@ -1835,32 +1820,6 @@ namespace GestionAffaire
             remplirPCNote();
             RemplirNumeroAffaire();
         }
-
-        private void button7_Click_1(object sender, EventArgs e)
-        {
-        }
-
-        private void button6_Click_1(object sender, EventArgs e)
-        {
-        }
-
-        private void BoxClient_Enter(object sender, EventArgs e)
-        {
-
-        }
-
-        
-
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
-        {
-            
-        }
-
-        private void checkBox2_CheckedChanged(object sender, EventArgs e)
-        {
-            
-        }
-
         private void button8_Click(object sender, EventArgs e)
         {
             errorProvider1.Dispose();
@@ -1872,34 +1831,31 @@ namespace GestionAffaire
             remplirListRespo();
         }
 
-        
 
-        
+        private void button1_Click(object sender, EventArgs e){}
+        private void cmbCinBeneRech_SelectedIndexChanged(object sender, EventArgs e){}
+        private void btnLoadListBene_Click(object sender, EventArgs e){}
+        private void btnValiderBene_Click(object sender, EventArgs e){}
+        private void btnModifierBene_Click(object sender, EventArgs e){}
+        private void btnSupprimer_Click(object sender, EventArgs e){}
+        private void cmbNumNoteRech_SelectedIndexChanged(object sender, EventArgs e){}
+        private void btnModifierNote_Click(object sender, EventArgs e){}
+        private void btnSupprimerNote_Click(object sender, EventArgs e){}
+        private void cmbPCNoteRech_SelectedIndexChanged(object sender, EventArgs e){}
+        private void btnValiderMission_Click(object sender, EventArgs e) {}
+        private void txtMontantAffAjouter_Validating(object sender, CancelEventArgs e){}
+        private void imprimerToolStripMenuItem_Click(object sender, EventArgs e){}
+        private void button6_Click(object sender, EventArgs e){}
+        private void button7_Click_1(object sender, EventArgs e){}
+        private void button6_Click_1(object sender, EventArgs e){}
+        private void BoxClient_Enter(object sender, EventArgs e){}
+        private void checkBox1_CheckedChanged(object sender, EventArgs e){}
+        private void checkBox2_CheckedChanged(object sender, EventArgs e){}
+        private void radioButton1_CheckedChanged(object sender, EventArgs e){}
+        private void BoxClientAjouter_Enter(object sender, EventArgs e){}
+        private void noteDeFraisToolStripMenuItem_Click(object sender, EventArgs e){}
+        private void missionToolStripMenuItem_Click(object sender, EventArgs e){}
+        private void txtNumeroNote_TextChanged(object sender, EventArgs e){}
 
-        private void radioButton1_CheckedChanged(object sender, EventArgs e)
-        {
-             
-        }
-
-        private void BoxClientAjouter_Enter(object sender, EventArgs e)
-        {
-
-        }
-
-        private void noteDeFraisToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-        private void missionToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void txtNumeroNote_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        
     }
 }
