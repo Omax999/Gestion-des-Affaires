@@ -23,8 +23,7 @@ namespace GestionAffaire
             InitializeComponent();
         }
 
-
-        // le menu
+        /************************************ le menu ************************************/
         private void ajouterToolStripMenuItem_Click(object sender, EventArgs e)
         {
             BoxAff.Visible = true;
@@ -90,7 +89,9 @@ namespace GestionAffaire
 
 
 
-        // les Methodes
+        /************************************ les Methodes ************************************/
+
+        // methode pour remplir les id et la liste des client
         public void RemplirIdClient()
         {
             DataTable dt = new DataTable();
@@ -136,6 +137,8 @@ namespace GestionAffaire
             ListClient.DataSource = dt;
         }
 
+
+        // methode pour remplir le nom et la liste de charge d'affaire
         public void RemplirNomRespo()
         {
             DataTable dt = new DataTable();
@@ -183,6 +186,8 @@ namespace GestionAffaire
             ListRespo.DataSource = dt;
         }
 
+
+        // methode pour remplir le numero et la liste d'affaire
         public void RemplirNumeroAffaire()
         {
             DataTable dt = new DataTable();
@@ -233,6 +238,8 @@ namespace GestionAffaire
             ListAff.DataSource = dt;
         }
 
+
+        //methode pour remplir les numero et la liste des Frais de note
         public void remplirNumeroNote()
         {
             DataTable dt = new DataTable();
@@ -289,7 +296,9 @@ namespace GestionAffaire
             //listFraisNote.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             //listFraisNote.DataSource = dt;
         }
-        
+
+
+        //methode pour remplir le Numeros et la liste des Missions
         public void remplirNumeroMission()
         {
             DataTable dt = new DataTable();
@@ -332,7 +341,9 @@ namespace GestionAffaire
             ListMission.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             ListMission.DataSource = dt;
         }
-        
+
+
+        //methode pour remplir Type de Note
         public void remplirTypeNote()
         {
             cmbTypeFrais.Items.Clear();
@@ -357,6 +368,7 @@ namespace GestionAffaire
 
 
         }
+        //methode pour remplir Pieces Comptable de Note
         public void remplirPCNote()
         {
             cmbPCFrais.Items.Clear();
@@ -366,6 +378,7 @@ namespace GestionAffaire
             cmbPCFrais.Items.Add("Ticket");
             cmbPCFrais.Items.Add("Sans");
         }
+
 
         //methode pour verifier si l'affaire est deja existant dans la base
         public Boolean IsAffExists(string affaire)
@@ -412,6 +425,8 @@ namespace GestionAffaire
             }
             return isThere;
         }
+
+        //methode pour verifier si le client est deja existant dans la base
         public Boolean IsClientExists(string cin)
         {
             DataTable dt = new DataTable();
@@ -531,9 +546,6 @@ namespace GestionAffaire
             return numeroNote;
         }
 
-       
-
-
 
 
         private void Form1_Load(object sender, EventArgs e)
@@ -552,6 +564,7 @@ namespace GestionAffaire
             remplirListRespo();
             NumeroNote();
         }
+
 
 
 
@@ -841,6 +854,8 @@ namespace GestionAffaire
         }
 
 
+
+
         // l'affaire
         private void cmbNumeroAff_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -994,6 +1009,8 @@ namespace GestionAffaire
         }
 
 
+
+
         // note de frais
         private void cmbTypeNoteAjouter_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -1043,12 +1060,12 @@ namespace GestionAffaire
                 da.Fill(dt);
                 con.Close();
 
-                for (int i = 0; i < dt.Rows.Count-1; i++)
-                {
-                    txtDateFrais.Text = dt.Rows[i][4].ToString();
-                    listFraisNote.Rows[i].Cells[3].Value = txtDateFrais.Text;
-                }
-                txtDateFrais.Text = "";
+                //for (int i = 0; i < dt.Rows.Count-1; i++)
+                //{
+                //    txtDateFrais.Text = dt.Rows[i][4].ToString();
+                //    listFraisNote.Rows[i].Cells[3].Value = txtDateFrais.Text;
+                //}
+                //txtDateFrais.Text = "";
                 //listFraisNote.DataSource = dt;
 
                 //MessageBox.Show();
@@ -1068,7 +1085,6 @@ namespace GestionAffaire
                     cmbTypeFrais.Text = dt.Rows[0][1].ToString();
                 }
             }
-            
         }
         private void button2_Click(object sender, EventArgs e)
         {
@@ -1581,6 +1597,9 @@ namespace GestionAffaire
                 txtTotalFraisNote.Visible = true;
                 btnSupprimerNoteFrais.Visible = true;
                 btnImrimerPdfNote.Visible = true;
+
+                remplirNumeroNote();
+                txtNumAff.Text = txtTotalFraisNote.Text = "";
             }
         }
         private void btnAjouterFrais_Click(object sender, EventArgs e)
@@ -1694,24 +1713,26 @@ namespace GestionAffaire
             listFraisNote.Rows.Clear();
 
             con.Open();
-            cmd.CommandText = "select * from NoteFrais where Numero='"+ int.Parse(cmbNumeroNote.Text) +"'";
+            cmd.CommandText = "select Numero,affaire,cast(totalFrais as varchar) as 'totalFrais' from NoteFrais where Numero='" + int.Parse(cmbNumeroNote.Text) +"'";
             da.SelectCommand = cmd;
             da.Fill(dt2);
 
             txtNumAff.Text = dt2.Rows[0][1].ToString();
-            txtTotalFraisNote.Text = dt2.Rows[0][2].ToString();
-
+            txtTotalFraisNote.Text = (dt2.Rows[0][2].ToString());
 
             cmd.Parameters.Clear();
 
-            cmd.CommandText = "select numero as 'Numero',Type,PiecesComptables as 'Piece Comptable',convert(date,[date]) as [Date],Frais from Frais where NoteFrais='" + int.Parse(cmbNumeroNote.Text) +"'";
+            cmd.CommandText = "select numero as 'Numero',Type,PiecesComptables as 'Piece Comptable',convert(date,[date]) as [Date],cast(frais as varchar) from Frais where NoteFrais='" + int.Parse(cmbNumeroNote.Text) +"'";
             da.SelectCommand = cmd;
             da.Fill(dt);
             con.Close();
 
+
             for (int i = 0; i < dt.Rows.Count; i++)
             {
                 listFraisNote.Rows.Add(dt.Rows[i][0].ToString(), dt.Rows[i][1].ToString(), dt.Rows[i][2].ToString(), dt.Rows[i][3].ToString(), dt.Rows[i][4].ToString());
+                txtDateFrais.Text = dt.Rows[i][3].ToString();
+                listFraisNote.Rows[i].Cells[3].Value = txtDateFrais.Text;
             }
 
             remplirTypeNote();
@@ -1721,47 +1742,6 @@ namespace GestionAffaire
         }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-        // beneficaire (client)
-        
-        // note de frais
-        
-        private void button2_Click_1(object sender, EventArgs e)
-        {
-            remplirListFraisNote();
-            remplirNumeroNote();
-            remplirTypeNote();
-            remplirPCNote();
-        }
-
-       
-        
-        
-
-        
-
-
-        
 
         private void btnPdfAff_Click(object sender, EventArgs e)
         {
@@ -1813,6 +1793,13 @@ namespace GestionAffaire
             RemplirIdClient();
             RemplirNumeroAffaire();
         }
+        private void button2_Click_1(object sender, EventArgs e)
+        {
+            remplirListFraisNote();
+            remplirNumeroNote();
+            remplirTypeNote();
+            remplirPCNote();
+        }
         private void button7_Click(object sender, EventArgs e)
         {
             remplirNumeroNote();
@@ -1856,6 +1843,5 @@ namespace GestionAffaire
         private void noteDeFraisToolStripMenuItem_Click(object sender, EventArgs e){}
         private void missionToolStripMenuItem_Click(object sender, EventArgs e){}
         private void txtNumeroNote_TextChanged(object sender, EventArgs e){}
-
     }
 }
