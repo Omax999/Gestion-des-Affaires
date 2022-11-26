@@ -306,9 +306,9 @@ namespace GestionAffaire
             // 
             this.groupBox2.Controls.Add(this.rbModifierSupprimerNote);
             this.groupBox2.Controls.Add(this.rbValiderNote);
-            this.groupBox2.Location = new System.Drawing.Point(6, 48);
+            this.groupBox2.Location = new System.Drawing.Point(6, 45);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(198, 128);
+            this.groupBox2.Size = new System.Drawing.Size(198, 158);
             this.groupBox2.TabIndex = 30;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Operations :";
@@ -319,9 +319,9 @@ namespace GestionAffaire
             this.rbModifierSupprimerNote.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.rbModifierSupprimerNote.Location = new System.Drawing.Point(4, 76);
             this.rbModifierSupprimerNote.Name = "rbModifierSupprimerNote";
-            this.rbModifierSupprimerNote.Size = new System.Drawing.Size(168, 24);
+            this.rbModifierSupprimerNote.Size = new System.Drawing.Size(195, 24);
             this.rbModifierSupprimerNote.TabIndex = 28;
-            this.rbModifierSupprimerNote.Text = "Modifier / Supprimer";
+            this.rbModifierSupprimerNote.Text = "Rechercher / Supprimer";
             this.rbModifierSupprimerNote.UseVisualStyleBackColor = true;
             this.rbModifierSupprimerNote.CheckedChanged += new System.EventHandler(this.rbModifierSupprimerNote_CheckedChanged);
             // 
@@ -790,6 +790,8 @@ namespace GestionAffaire
             this.ListAff.RowsDefaultCellStyle = dataGridViewCellStyle20;
             this.ListAff.Size = new System.Drawing.Size(764, 237);
             this.ListAff.TabIndex = 4;
+            this.ListAff.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.ListAff_CellClick);
+            this.ListAff.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.ListAff_CellContentClick_1);
             // 
             // cmbNumeroAff
             // 
@@ -1328,18 +1330,20 @@ namespace GestionAffaire
             // 
             this.groupBox1.Controls.Add(this.radioButton3);
             this.groupBox1.Controls.Add(this.radioButton2);
-            this.groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox1.Location = new System.Drawing.Point(24, 53);
+            this.groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.groupBox1.Location = new System.Drawing.Point(6, 45);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(183, 133);
+            this.groupBox1.Size = new System.Drawing.Size(192, 158);
             this.groupBox1.TabIndex = 23;
             this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Type de Partie :";
             // 
             // radioButton3
             // 
             this.radioButton3.AutoSize = true;
             this.radioButton3.Checked = true;
-            this.radioButton3.Location = new System.Drawing.Point(24, 46);
+            this.radioButton3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.radioButton3.Location = new System.Drawing.Point(4, 42);
             this.radioButton3.Name = "radioButton3";
             this.radioButton3.Size = new System.Drawing.Size(67, 24);
             this.radioButton3.TabIndex = 30;
@@ -1351,7 +1355,8 @@ namespace GestionAffaire
             // radioButton2
             // 
             this.radioButton2.AutoSize = true;
-            this.radioButton2.Location = new System.Drawing.Point(24, 85);
+            this.radioButton2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.radioButton2.Location = new System.Drawing.Point(4, 76);
             this.radioButton2.Name = "radioButton2";
             this.radioButton2.Size = new System.Drawing.Size(140, 24);
             this.radioButton2.TabIndex = 29;
