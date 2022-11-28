@@ -38,3 +38,4 @@ C:\Users\OMAR\Desktop\GestionAffaire\bin\Debug\System.Data.SqlClient.dll
 C:\Users\OMAR\Desktop\GestionAffaire\bin\Debug\System.Data.SqlClient.xml
 C:\Users\OMAR\Desktop\GestionAffaire\obj\Debug\GestionAffaire.csproj.AssemblyReference.cache
 C:\Users\OMAR\Desktop\GestionAffaire\obj\Debug\GestionAffaire.FraisForm.resources
+C:\Users\OMAR\Desktop\GestionAffaire\obj\Debug\GestionAffaire.Form3.resources

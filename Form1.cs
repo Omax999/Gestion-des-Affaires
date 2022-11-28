@@ -559,6 +559,7 @@ namespace GestionAffaire
 
 
 
+
         private void Form1_Load(object sender, EventArgs e)
         {
             RemplirNumeroAffaire();
@@ -1466,7 +1467,42 @@ namespace GestionAffaire
         // ici report de note de Frais
         private void btnImrimerPdfNote_Click(object sender, EventArgs e)
         {
+            errorProvider1.Dispose();
+            if (cmbNumeroNote.Text != "")
+            {
+                DataSet ds = new DataSet();
+                ds.Tables.Clear();
 
+                con.Open();
+
+                cmd.CommandText = "select * from NoteFrais where Numero='" + int.Parse(cmbNumeroNote.Text) + "'";
+                da.SelectCommand = cmd;
+                da.Fill(ds, "NoteFrais");
+
+                cmd.Parameters.Clear();
+
+                cmd.CommandText = "select * from Frais where noteFrais='" + int.Parse(cmbNumeroNote.Text) + "'";
+                da.SelectCommand = cmd;
+                da.Fill(ds, "Frais");
+
+                con.Close();
+
+
+
+                CrystalReport2 cr = new CrystalReport2();
+                cr.Database.Tables["NoteFrais"].SetDataSource(ds.Tables[0]);
+                cr.Database.Tables["Frais"].SetDataSource(ds.Tables[1]);
+
+                Form3 f = new Form3();
+                f.crystalReportViewer1.ReportSource = null;
+                f.crystalReportViewer1.ReportSource = cr;
+                f.crystalReportViewer1.Refresh();
+
+                f.Show();
+                this.Hide();
+            }
+            else
+                errorProvider1.SetError(cmbNumeroNote, "chisir Numero de Note");
         }
         
 

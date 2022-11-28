@@ -52,9 +52,9 @@ namespace GestionAffaire
             // 
             // reteurToolStripMenuItem
             // 
-            this.reteurToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.reteurToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.reteurToolStripMenuItem.Name = "reteurToolStripMenuItem";
-            this.reteurToolStripMenuItem.Size = new System.Drawing.Size(86, 34);
+            this.reteurToolStripMenuItem.Size = new System.Drawing.Size(91, 34);
             this.reteurToolStripMenuItem.Text = "Retour";
             this.reteurToolStripMenuItem.Click += new System.EventHandler(this.reteurToolStripMenuItem_Click);
             // 
